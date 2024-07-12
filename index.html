@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>디마 강화 도우미</title>
     <style>
-		@font-face {
-			font-family: 'ONE-Mobile-POP';
-			src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
-			font-weight: normal;
-			font-style: normal;
-		}
+        @font-face {
+            font-family: 'ONE-Mobile-POP';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
         :root {
             --text-color: #61dafb;
             --button-color: #61dafb;
@@ -36,6 +36,7 @@
             padding: 10px 20px;
             background-color: #282c34;
             border-radius: 4px;
+            flex-wrap: wrap;
         }
         .tab {
             padding: 10px 20px;
@@ -70,14 +71,24 @@
             padding-bottom: 20px;
             margin-bottom: 20px;
         }
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
         .buttons {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 5px;
+            width: 100%;
+            max-width: 150px;
         }
         .button {
-            width: 40px;
-            height: 40px;
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
+            height: 0;
             cursor: pointer;
             color: white;
             text-align: center;
@@ -87,8 +98,13 @@
             transition: border-color 0.3s;
             outline: none;
             margin: 0;
-            padding: 0;
-            line-height: 40px;
+        }
+        .button span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            line-height: 1;
         }
         .button.active {
             border-color: white;
@@ -158,9 +174,11 @@
             width: 100%;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
         .buttons-container {
             flex: 1;
+            min-width: 100px;
         }
         .form-container {
             flex: 1;
@@ -174,7 +192,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-right: 20px;
         }
         #chat-container {
             margin-top: 30px;
@@ -239,47 +256,48 @@
             background-color: #20232a;
             color: var(--text-color);
         }
-		#content-wrapper {
-			position: relative;
-			max-width: 840px;
-			margin: 0 auto;
-			padding: 10px;
-			border: 2px solid var(--text-color);
-			border-radius: 8px;
-		}
-		#content-wrapper::before {
-			content: '극강 확인';
-			position: absolute;
-			top: -10px;
-			left: 20px;
-			background-color: #20232a;
-			padding: 0 10px;
-			color: var(--text-color);
-			font-size: 16px;
-		}
-		#chat-wrapper {
-			position: relative;
-			max-width: 840px;
-			margin: 0 auto;
-			padding: 10px;
-			border: 2px solid var(--text-color);
-			border-radius: 8px;
-			margin-top: 20px;
-		}
-		#chat-wrapper::before {
-			content: '수치 기록';
-			position: absolute;
-			top: -10px;
-			left: 20px;
-			background-color: #20232a;
-			padding: 0 10px;
-			color: var(--text-color);
-			font-size: 16px;
-		}
-		.warning {
-			color: red;
-			font-weight: bold;
-		}
+        #content-wrapper {
+            position: relative;
+            max-width: 840px;
+            margin: 0 auto;
+			margin: 10px;
+            padding: 10px;
+            border: 2px solid var(--text-color);
+            border-radius: 8px;
+        }
+        #content-wrapper::before {
+            content: '극강 확인';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: #20232a;
+            padding: 0 10px;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        #chat-wrapper {
+            position: relative;
+            max-width: 840px;
+            margin: 10px;
+            padding: 10px;
+            border: 2px solid var(--text-color);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        #chat-wrapper::before {
+            content: '수치 기록';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: #20232a;
+            padding: 0 10px;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        .warning {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -287,127 +305,127 @@
 <h1>디마 강화 도우미</h1>
 
 <div id="content-wrapper">
-	<div id="tabs">
-		<div class="tab active" data-target="AT">AT</div>
-		<div class="tab" data-target="HP">HP</div>
-		<div class="tab" data-target="CT">CT</div>
-		<div class="tab" data-target="BL">BL</div>
-		<div class="tab" data-target="EV">EV</div>
-	</div>
-	<div id="content">
-		<div id="AT" class="content-section active">
-			<div class="content-section-wrapper">
-				<div class="buttons-container">
-					<div class="buttons" id="at-buttons"></div>
-				</div>
-				<div class="form-container">
-					<form>
-						<label>강화수치</label>
-						<input type="number" step="0.01" id="at-value" required>
-						<label>기본수치</label>
-						<input type="number" step="0.01" id="at-base" required>
-						<button type="button" onclick="checkExtreme('AT')">확인</button>
-					</form>
-				</div>
-				<div class="status-container">
-					<h2>AT</h2>
-					<p id="selected-level-at">선택된 강화 단계:<br>1</p>
-				</div>
-			</div>
-			<p id="at-result"></p>
-		</div>
-		<div id="HP" class="content-section">
-			<div class="content-section-wrapper">
-				<div class="buttons-container">
-					<div class="buttons" id="hp-buttons"></div>
-				</div>
-				<div class="form-container">
-					<form>
-						<label>강화수치</label>
-						<input type="number" step="0.01" id="hp-value" required>
-						<label>기본수치</label>
-						<input type="number" step="0.01" id="hp-base" required>
-						<button type="button" onclick="checkExtreme('HP')">확인</button>
-					</form>
-				</div>
-				<div class="status-container">
-					<h2>HP</h2>
-					<p id="selected-level-hp">선택된 강화 단계:<br>1</p>
-				</div>
-			</div>
-			<p id="hp-result"></p>
-		</div>
-		<div id="CT" class="content-section">
-			<div class="content-section-wrapper">
-				<div class="buttons-container">
-					<div class="buttons" id="ct-buttons"></div>
-				</div>
-				<div class="form-container">
-					<form>
-						<label>강화수치</label>
-						<input type="number" step="0.01" id="ct-value" required>
-						<label>기본수치</label>
-						<input type="number" step="0.01" id="ct-base" required>
-						<button type="button" onclick="checkExtreme('CT')">확인</button>
-					</form>
-				</div>
-				<div class="status-container">
-					<h2>CT</h2>
-					<p id="selected-level-ct">선택된 강화 단계:<br>1</p>
-				</div>
-			</div>
-			<p id="ct-result"></p>
-		</div>
-		<div id="BL" class="content-section">
-			<div class="content-section-wrapper">
-				<div class="buttons-container">
-					<div class="buttons" id="bl-buttons"></div>
-				</div>
-				<div class="form-container">
-					<form>
-						<label>강화수치</label>
-						<input type="number" step="0.01" id="bl-value" required>
-						<label>기본수치</label>
-						<input type="number" step="0.01" id="bl-base" required>
-						<button type="button" onclick="checkExtreme('BL')">확인</button>
-					</form>
-				</div>
-				<div class="status-container">
-					<h2>BL</h2>
-					<p id="selected-level-bl">선택된 강화 단계:<br>1</p>
-				</div>
-			</div>
-			<p id="bl-result"></p>
-		</div>
-		<div id="EV" class="content-section">
-			<div class="content-section-wrapper">
-				<div class="buttons-container">
-					<div class="buttons" id="ev-buttons"></div>
-				</div>
-				<div class="form-container">
-					<form>
-						<label>강화수치</label>
-						<input type="number" step="0.01" id="ev-value" required>
-						<label>기본수치</label>
-						<input type="number" step="0.01" id="ev-base" required>
-						<button type="button" onclick="checkExtreme('EV')">확인</button>
-					</form>
-				</div>
-				<div class="status-container">
-					<h2>EV</h2>
-					<p id="selected-level-ev">선택된 강화 단계:<br>1</p>
-				</div>
-			</div>
-			<p id="ev-result"></p>
-		</div>
-	</div>
+    <div id="tabs">
+        <div class="tab active" data-target="AT">AT</div>
+        <div class="tab" data-target="HP">HP</div>
+        <div class="tab" data-target="CT">CT</div>
+        <div class="tab" data-target="BL">BL</div>
+        <div class="tab" data-target="EV">EV</div>
+    </div>
+    <div id="content">
+        <div id="AT" class="content-section active">
+            <div class="content-section-wrapper">
+                <div class="buttons-container">
+                    <div class="buttons" id="at-buttons"></div>
+                </div>
+                <div class="form-container">
+                    <form>
+                        <label>강화수치</label>
+                        <input type="number" step="0.01" id="at-value" required>
+                        <label>기본수치</label>
+                        <input type="number" step="0.01" id="at-base" required>
+                        <button type="button" onclick="checkExtreme('AT')">확인</button>
+                    </form>
+                </div>
+                <div class="status-container">
+                    <h2>AT</h2>
+                    <p id="selected-level-at">선택된 강화 단계:<br>1</p>
+                </div>
+            </div>
+            <p id="at-result"></p>
+        </div>
+        <div id="HP" class="content-section">
+            <div class="content-section-wrapper">
+                <div class="buttons-container">
+                    <div class="buttons" id="hp-buttons"></div>
+                </div>
+                <div class="form-container">
+                    <form>
+                        <label>강화수치</label>
+                        <input type="number" step="0.01" id="hp-value" required>
+                        <label>기본수치</label>
+                        <input type="number" step="0.01" id="hp-base" required>
+                        <button type="button" onclick="checkExtreme('HP')">확인</button>
+                    </form>
+                </div>
+                <div class="status-container">
+                    <h2>HP</h2>
+                    <p id="selected-level-hp">선택된 강화 단계:<br>1</p>
+                </div>
+            </div>
+            <p id="hp-result"></p>
+        </div>
+        <div id="CT" class="content-section">
+            <div class="content-section-wrapper">
+                <div class="buttons-container">
+                    <div class="buttons" id="ct-buttons"></div>
+                </div>
+                <div class="form-container">
+                    <form>
+                        <label>강화수치</label>
+                        <input type="number" step="0.01" id="ct-value" required>
+                        <label>기본수치</label>
+                        <input type="number" step="0.01" id="ct-base" required>
+                        <button type="button" onclick="checkExtreme('CT')">확인</button>
+                    </form>
+                </div>
+                <div class="status-container">
+                    <h2>CT</h2>
+                    <p id="selected-level-ct">선택된 강화 단계:<br>1</p>
+                </div>
+            </div>
+            <p id="ct-result"></p>
+        </div>
+        <div id="BL" class="content-section">
+            <div class="content-section-wrapper">
+                <div class="buttons-container">
+                    <div class="buttons" id="bl-buttons"></div>
+                </div>
+                <div class="form-container">
+                    <form>
+                        <label>강화수치</label>
+                        <input type="number" step="0.01" id="bl-value" required>
+                        <label>기본수치</label>
+                        <input type="number" step="0.01" id="bl-base" required>
+                        <button type="button" onclick="checkExtreme('BL')">확인</button>
+                    </form>
+                </div>
+                <div class="status-container">
+                    <h2>BL</h2>
+                    <p id="selected-level-bl">선택된 강화 단계:<br>1</p>
+                </div>
+            </div>
+            <p id="bl-result"></p>
+        </div>
+        <div id="EV" class="content-section">
+            <div class="content-section-wrapper">
+                <div class="buttons-container">
+                    <div class="buttons" id="ev-buttons"></div>
+                </div>
+                <div class="form-container">
+                    <form>
+                        <label>강화수치</label>
+                        <input type="number" step="0.01" id="ev-value" required>
+                        <label>기본수치</label>
+                        <input type="number" step="0.01" id="ev-base" required>
+                        <button type="button" onclick="checkExtreme('EV')">확인</button>
+                    </form>
+                </div>
+                <div class="status-container">
+                    <h2>EV</h2>
+                    <p id="selected-level-ev">선택된 강화 단계:<br>1</p>
+                </div>
+            </div>
+            <p id="ev-result"></p>
+        </div>
+    </div>
 </div>
 <div id="chat-wrapper">
-	<div id="chat-container">
-		<span class="warning">주의사항: 새로고침하거나 닫았다 켜는 경우 기록이 사라집니다.</span>
-		<div id="chat-messages"></div>
-		<input type="text" id="chat-input" placeholder="단계 선택 후 입력한 뒤에 엔터를 누르세요!">
-	</div>
+    <div id="chat-container">
+        <span class="warning">주의사항: 새로고침하거나 닫았다 켜는 경우 기록이 사라집니다.</span>
+        <div id="chat-messages"></div>
+        <input type="text" id="chat-input" placeholder="단계 선택 후 입력한 뒤에 엔터를 누르세요!">
+    </div>
 </div>
 <script>
     const data = {
@@ -480,7 +498,7 @@
         for (let i = 1; i <= 15; i++) {
             const button = document.createElement('button');
             button.className = 'button';
-            button.textContent = i;
+            button.innerHTML = `<span>${i}</span>`;
             button.onclick = () => selectLevel(type, i);
             container.appendChild(button);
         }
