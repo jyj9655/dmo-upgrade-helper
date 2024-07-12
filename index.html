@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디마 강화 도우미</title>
+    <style>
+		@font-face {
+			font-family: 'ONE-Mobile-POP';
+			src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
+			font-weight: normal;
+			font-style: normal;
+		}
+        :root {
+            --text-color: #61dafb;
+            --button-color: #61dafb;
+        }
+        body {
+            font-family: 'ONE-Mobile-POP', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #20232a;
+            color: var(--text-color);
+        }
+        h1 {
+            text-align: center;
+            padding: 20px;
+        }
+        #tabs {
+            display: flex;
+            justify-content: space-around;
+            max-width: 800px;
+            margin: 20px auto;
+            cursor: pointer;
+            padding: 10px 20px;
+            background-color: #282c34;
+            border-radius: 4px;
+        }
+        .tab {
+            padding: 10px 20px;
+            flex-grow: 1;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+        .tab.active {
+            background-color: var(--button-color);
+            color: #282c34;
+            font-weight: bold;
+        }
+        #content {
+            background-color: #282c34;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .content-section {
+            display: none;
+            flex-grow: 1;
+        }
+        .content-section.active {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            border-bottom: 1px solid #444;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+        .button {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 2px;
+            border: 2px dashed transparent;
+            transition: border-color 0.3s;
+            outline: none;
+            margin: 0;
+            padding: 0;
+            line-height: 40px;
+        }
+        .button.active {
+            border-color: white;
+        }
+        .button:nth-child(1),
+        .button:nth-child(2),
+        .button:nth-child(3) {
+            background-color: #28a745;
+        }
+        .button:nth-child(4),
+        .button:nth-child(5),
+        .button:nth-child(6) {
+            background-color: #17a2b8;
+        }
+        .button:nth-child(7),
+        .button:nth-child(8),
+        .button:nth-child(9) {
+            background-color: #6f42c1;
+        }
+        .button:nth-child(10),
+        .button:nth-child(11),
+        .button:nth-child(12) {
+            background-color: #dc3545;
+        }
+        .button:nth-child(13),
+        .button:nth-child(14),
+        .button:nth-child(15) {
+            background-color: #ffc107;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+        label, input, button {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 200px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: var(--button-color);
+            color: #282c34;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        button:hover {
+            background-color: #21a1f1;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        p {
+            text-align: center;
+        }
+        .content-section-wrapper {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .buttons-container {
+            flex: 1;
+        }
+        .form-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .status-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-right: 20px;
+        }
+        #chat-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #282c34;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 30px auto 0 auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        #chat-messages {
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #20232a;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .chat-message {
+            padding: 4px;
+            border-bottom: 1px solid #444;
+        }
+        .chat-prefix {
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+            color: #282c34;
+            border-radius: 2px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+        .chat-prefix[data-level="1"],
+        .chat-prefix[data-level="2"],
+        .chat-prefix[data-level="3"] {
+            background-color: #28a745;
+        }
+        .chat-prefix[data-level="4"],
+        .chat-prefix[data-level="5"],
+        .chat-prefix[data-level="6"] {
+            background-color: #17a2b8;
+        }
+        .chat-prefix[data-level="7"],
+        .chat-prefix[data-level="8"],
+        .chat-prefix[data-level="9"] {
+            background-color: #6f42c1;
+        }
+        .chat-prefix[data-level="10"],
+        .chat-prefix[data-level="11"],
+        .chat-prefix[data-level="12"] {
+            background-color: #dc3545;
+        }
+        .chat-prefix[data-level="13"],
+        .chat-prefix[data-level="14"],
+        .chat-prefix[data-level="15"] {
+            background-color: #ffc107;
+        }
+        #chat-input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #20232a;
+            color: var(--text-color);
+        }
+		#content-wrapper {
+			position: relative;
+			max-width: 840px;
+			margin: 0 auto;
+			padding: 10px;
+			border: 2px solid var(--text-color);
+			border-radius: 8px;
+		}
+		#content-wrapper::before {
+			content: '극강 확인';
+			position: absolute;
+			top: -10px;
+			left: 20px;
+			background-color: #20232a;
+			padding: 0 10px;
+			color: var(--text-color);
+			font-size: 16px;
+		}
+		#chat-wrapper {
+			position: relative;
+			max-width: 840px;
+			margin: 0 auto;
+			padding: 10px;
+			border: 2px solid var(--text-color);
+			border-radius: 8px;
+			margin-top: 20px;
+		}
+		#chat-wrapper::before {
+			content: '수치 기록';
+			position: absolute;
+			top: -10px;
+			left: 20px;
+			background-color: #20232a;
+			padding: 0 10px;
+			color: var(--text-color);
+			font-size: 16px;
+		}
+		.warning {
+			color: red;
+			font-weight: bold;
+		}
+    </style>
+</head>
+<body>
+
+<h1>디마 강화 도우미</h1>
+
+<div id="content-wrapper">
+	<div id="tabs">
+		<div class="tab active" data-target="AT">AT</div>
+		<div class="tab" data-target="HP">HP</div>
+		<div class="tab" data-target="CT">CT</div>
+		<div class="tab" data-target="BL">BL</div>
+		<div class="tab" data-target="EV">EV</div>
+	</div>
+	<div id="content">
+		<div id="AT" class="content-section active">
+			<div class="content-section-wrapper">
+				<div class="buttons-container">
+					<div class="buttons" id="at-buttons"></div>
+				</div>
+				<div class="form-container">
+					<form>
+						<label>강화수치</label>
+						<input type="number" step="0.01" id="at-value" required>
+						<label>기본수치</label>
+						<input type="number" step="0.01" id="at-base" required>
+						<button type="button" onclick="checkExtreme('AT')">확인</button>
+					</form>
+				</div>
+				<div class="status-container">
+					<h2>AT</h2>
+					<p id="selected-level-at">선택된 강화 단계:<br>1</p>
+				</div>
+			</div>
+			<p id="at-result"></p>
+		</div>
+		<div id="HP" class="content-section">
+			<div class="content-section-wrapper">
+				<div class="buttons-container">
+					<div class="buttons" id="hp-buttons"></div>
+				</div>
+				<div class="form-container">
+					<form>
+						<label>강화수치</label>
+						<input type="number" step="0.01" id="hp-value" required>
+						<label>기본수치</label>
+						<input type="number" step="0.01" id="hp-base" required>
+						<button type="button" onclick="checkExtreme('HP')">확인</button>
+					</form>
+				</div>
+				<div class="status-container">
+					<h2>HP</h2>
+					<p id="selected-level-hp">선택된 강화 단계:<br>1</p>
+				</div>
+			</div>
+			<p id="hp-result"></p>
+		</div>
+		<div id="CT" class="content-section">
+			<div class="content-section-wrapper">
+				<div class="buttons-container">
+					<div class="buttons" id="ct-buttons"></div>
+				</div>
+				<div class="form-container">
+					<form>
+						<label>강화수치</label>
+						<input type="number" step="0.01" id="ct-value" required>
+						<label>기본수치</label>
+						<input type="number" step="0.01" id="ct-base" required>
+						<button type="button" onclick="checkExtreme('CT')">확인</button>
+					</form>
+				</div>
+				<div class="status-container">
+					<h2>CT</h2>
+					<p id="selected-level-ct">선택된 강화 단계:<br>1</p>
+				</div>
+			</div>
+			<p id="ct-result"></p>
+		</div>
+		<div id="BL" class="content-section">
+			<div class="content-section-wrapper">
+				<div class="buttons-container">
+					<div class="buttons" id="bl-buttons"></div>
+				</div>
+				<div class="form-container">
+					<form>
+						<label>강화수치</label>
+						<input type="number" step="0.01" id="bl-value" required>
+						<label>기본수치</label>
+						<input type="number" step="0.01" id="bl-base" required>
+						<button type="button" onclick="checkExtreme('BL')">확인</button>
+					</form>
+				</div>
+				<div class="status-container">
+					<h2>BL</h2>
+					<p id="selected-level-bl">선택된 강화 단계:<br>1</p>
+				</div>
+			</div>
+			<p id="bl-result"></p>
+		</div>
+		<div id="EV" class="content-section">
+			<div class="content-section-wrapper">
+				<div class="buttons-container">
+					<div class="buttons" id="ev-buttons"></div>
+				</div>
+				<div class="form-container">
+					<form>
+						<label>강화수치</label>
+						<input type="number" step="0.01" id="ev-value" required>
+						<label>기본수치</label>
+						<input type="number" step="0.01" id="ev-base" required>
+						<button type="button" onclick="checkExtreme('EV')">확인</button>
+					</form>
+				</div>
+				<div class="status-container">
+					<h2>EV</h2>
+					<p id="selected-level-ev">선택된 강화 단계:<br>1</p>
+				</div>
+			</div>
+			<p id="ev-result"></p>
+		</div>
+	</div>
+</div>
+<div id="chat-wrapper">
+	<div id="chat-container">
+		<span class="warning">주의사항: 새로고침하거나 닫았다 켜는 경우 기록이 사라집니다.</span>
+		<div id="chat-messages"></div>
+		<input type="text" id="chat-input" placeholder="단계 선택 후 입력한 뒤에 엔터를 누르세요!">
+	</div>
+</div>
+<script>
+    const data = {
+        AT: [0.030, 0.060, 0.090, 0.140, 0.190, 0.240, 0.340, 0.440, 0.540, 0.690, 0.840, 0.990, 1.140, 1.290, 1.440],
+        HP: [0.020, 0.040, 0.060, 0.090, 0.120, 0.150, 0.190, 0.230, 0.270, 0.310, 0.340, 0.390, 0.440, 0.490, 0.540],
+        CT: [0.150, 0.300, 0.450, 0.700, 0.950, 1.200, 1.700, 2.200, 2.700, 3.450, 4.200, 4.950, 5.700, 6.450, 7.200],
+        BL: [0.020, 0.040, 0.060, 0.090, 0.120, 0.150, 0.210, 0.270, 0.330, 0.420, 0.510, 0.600, 0.690, 0.780, 0.870],
+        EV: [0.120, 0.240, 0.360, 0.560, 0.760, 0.960, 1.360, 1.760, 2.160, 2.760, 3.360, 3.960, 4.560, 5.160, 5.760]
+    };
+
+    const colors = {
+        AT: '#61dafb',
+        HP: '#ff6347',
+        CT: '#32cd32',
+        BL: '#ff4500',
+        EV: '#1e90ff'
+    };
+
+    let selectedLevel = {
+        AT: 1,
+        HP: 1,
+        CT: 1,
+        BL: 1,
+        EV: 1
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        ['AT', 'HP', 'CT', 'BL', 'EV'].forEach(type => {
+            createButtons(type);
+            selectLevel(type, 1);
+        });
+
+        document.getElementById('chat-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const message = event.target.value;
+                if (message.trim() !== '') {
+                    const chatMessages = document.getElementById('chat-messages');
+                    const newMessage = document.createElement('div');
+                    newMessage.classList.add('chat-message');
+                    const activeTab = document.querySelector('.tab.active').textContent;
+                    const selectedLevelValue = selectedLevel[activeTab];
+                    const prefix = `${activeTab}>${selectedLevelValue}`;
+                    newMessage.innerHTML = `<span class="chat-prefix" data-level="${selectedLevelValue}">${prefix}</span>${message}`;
+                    chatMessages.appendChild(newMessage);
+                    event.target.value = '';
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+        });
+
+        const tabs = document.querySelectorAll('.tab');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contentSections.forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+
+                document.documentElement.style.setProperty('--text-color', colors[tab.dataset.target]);
+                document.documentElement.style.setProperty('--button-color', colors[tab.dataset.target]);
+            });
+        });
+    });
+
+    function createButtons(type) {
+        const container = document.getElementById(`${type.toLowerCase()}-buttons`);
+        for (let i = 1; i <= 15; i++) {
+            const button = document.createElement('button');
+            button.className = 'button';
+            button.textContent = i;
+            button.onclick = () => selectLevel(type, i);
+            container.appendChild(button);
+        }
+    }
+
+    function selectLevel(type, level) {
+        const currentLevel = selectedLevel[type];
+        if (currentLevel === level) {
+            selectedLevel[type] = 1;
+        } else {
+            selectedLevel[type] = level;
+        }
+        
+        const buttons = document.querySelectorAll(`#${type.toLowerCase()}-buttons .button`);
+        buttons.forEach(button => button.classList.remove('active'));
+        if (selectedLevel[type] !== 1) {
+            buttons[selectedLevel[type] - 1].classList.add('active');
+        } else {
+            buttons[0].classList.add('active');
+        }
+        document.getElementById(`selected-level-${type.toLowerCase()}`).innerHTML = `선택된 강화 단계:<br>${selectedLevel[type]}`;
+    }
+
+    function checkExtreme(type) {
+        const value = parseFloat(document.getElementById(`${type.toLowerCase()}-value`).value);
+        const base = parseFloat(document.getElementById(`${type.toLowerCase()}-base`).value);
+        const level = selectedLevel[type];
+
+        const ratio = (value / base).toFixed(3);
+        const expected = data[type][level - 1];
+        const qwe = Math.abs(expected - ratio);
+
+        let state = "극";
+
+        if (qwe < 0.005) {
+            state = "극";
+        } else if (qwe <= 0.010) {
+            state = "상급";
+        } else if (qwe <= 0.020) {
+            state = "중상급";
+        } else if (qwe <= 0.030) {
+            state = "중급";
+        } else if (qwe <= 0.040) {
+            state = "중하급";
+        } else {
+            state = "하급";
+        }
+
+        if (base * expected < value) {
+            state = "극";
+        }
+
+        const resultElement = document.getElementById(`${type.toLowerCase()}-result`);
+        resultElement.textContent = `${state} (계산된 값: ${ratio}, 예상 값: ${expected})`;
+    }
+</script>
+</body>
+</html>
