@@ -60,12 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.style.setProperty('--text-color', colors[tab.dataset.target]);
             document.documentElement.style.setProperty('--button-color', colors[tab.dataset.target]);
             
-            // Calculate and set the darkened hover color
             const buttonColor = colors[tab.dataset.target];
             const darkenedColor = darkenColor(buttonColor, 20);
             document.documentElement.style.setProperty('--button-color-hover', darkenedColor);
         });
     });
+
+    // 모달 초기 숨기기
+    const modal = document.getElementById("message-modal");
+    modal.style.display = "none";
 });
 
 const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
@@ -112,8 +115,17 @@ function selectLevel(type, level) {
 }
 
 function checkExtreme(type) {
-    const value = parseFloat(document.getElementById(`${type.toLowerCase()}-value`).value);
-    const base = parseFloat(document.getElementById(`${type.toLowerCase()}-base`).value);
+    const valueElement = document.getElementById(`${type.toLowerCase()}-value`);
+    const baseElement = document.getElementById(`${type.toLowerCase()}-base`);
+    
+    const value = parseFloat(valueElement.value);
+    const base = parseFloat(baseElement.value);
+    
+    if (isNaN(value) || isNaN(base)) {
+        showMessage("값을 입력해주세요.");
+        return;
+    }
+    
     const level = selectedLevel[type];
 
     const ratio = (value / base).toFixed(3);
@@ -142,4 +154,31 @@ function checkExtreme(type) {
 
     const resultElement = document.getElementById(`${type.toLowerCase()}-result`);
     resultElement.textContent = `${state} (계산된 값: ${ratio}, 예상 값: ${expected})`;
+}
+
+function showMessage(message) {
+    const modal = document.getElementById("message-modal");
+    const modalMessage = document.getElementById("modal-message");
+    modalMessage.textContent = message;
+    modal.style.display = "flex";
+    document.addEventListener('keydown', handleKeydown);
+}
+
+function closeModal() {
+    const modal = document.getElementById("message-modal");
+    modal.style.display = "none";
+    document.removeEventListener('keydown', handleKeydown);
+}
+
+function handleKeydown(event) {
+    if (event.key === 'Escape' || event.key === 'Enter') {
+        closeModal();
+    }
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById("message-modal");
+    if (event.target === modal) {
+        closeModal();
+    }
 }
