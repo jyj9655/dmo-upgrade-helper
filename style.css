@@ -413,3 +413,47 @@ button.confirm:active {
     font-size: 16px;
     color: #333;
 }
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+#simulator-button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#simulator-button-wrapper button {
+    position: relative;
+    padding: 15px 30px;
+    background-color: var(--button-color);
+    color: #f0f0f0;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'ONE-Mobile-POP', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 4px #999;
+    text-shadow: 0 0 5px var(--button-color-hover);
+    margin-left: 20px;
+    animation: shake 1.5s infinite;
+}
+
+#simulator-button-wrapper button:hover {
+    background-color: var(--button-color-hover);
+    text-shadow: 0 0 5px var(--button-color);
+}
+
+#simulator-button-wrapper button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px #666;
+    animation: none;
+}
