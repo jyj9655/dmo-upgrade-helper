@@ -23,6 +23,47 @@ let selectedLevel = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 이모티콘 애니메이션 시작
+    const emojiLeft = document.getElementById('emoji-left');
+    const emojiRight = document.getElementById('emoji-right');
+
+    // 초기 랜덤 위치 설정
+    setRandomPosition(emojiLeft);
+    setRandomPosition(emojiRight);
+
+    // 랜덤 위치 설정 함수
+    function setRandomPosition(element) {
+        const maxWidth = window.innerWidth - element.offsetWidth - 20; // 여백을 고려한 최대 너비
+        const maxHeight = window.innerHeight - element.offsetHeight - 20; // 여백을 고려한 최대 높이
+        const randomX = Math.random() * maxWidth;
+        const randomY = Math.random() * maxHeight;
+        element.style.left = `${randomX}px`;
+        element.style.top = `${randomY}px`;
+    }
+
+    // 이동 애니메이션 설정 함수
+    function setRandomMovement(element) {
+        const moveX = (Math.random() - 0.5) * 200; // -100px ~ +100px 사이의 이동
+        const moveY = (Math.random() - 0.5) * 200; // -100px ~ +100px 사이의 이동
+        element.style.setProperty('--move-x', `${moveX}px`);
+        element.style.setProperty('--move-y', `${moveY}px`);
+    }
+
+    setRandomMovement(emojiLeft);
+    setRandomMovement(emojiRight);
+
+    // 마우스 올렸을 때 멈추고 설명 표시
+    document.querySelectorAll('.floating-emoji').forEach(emoji => {
+        emoji.addEventListener('mouseover', () => {
+            emoji.style.animationPlayState = 'paused';
+        });
+        emoji.addEventListener('mouseout', () => {
+            emoji.style.animationPlayState = 'running';
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
     ['AT', 'HP', 'CT', 'BL', 'EV'].forEach(type => {
         createButtons(type);
         selectLevel(type, 1);
