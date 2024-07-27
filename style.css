@@ -13,6 +13,8 @@
 :root {
     --text-color: #61dafb;
     --button-color: #61dafb;
+    --button-color-hover: #58c4e6;
+    --active-color: #ffcc00;
 }
 body {
     font-family: 'ONE-Mobile-POP', sans-serif;
@@ -60,7 +62,12 @@ body {
 }
 
 #navbar-menu a:hover {
-    color: var(--button-color);
+    color: var(--button-color-hover);
+}
+
+#navbar-menu a.active {
+    font-weight: bold;
+    color: var(--active-color);
 }
 
 #banner {
