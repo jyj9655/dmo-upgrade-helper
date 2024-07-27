@@ -24,6 +24,9 @@
         #navbar-menu a {
             color: #7289da;
         }
+        #banner {
+            width: 100%;
+        }
         #simulator {
             display: flex;
             flex-direction: column;
@@ -190,7 +193,7 @@
             margin-top: 5px;
             text-align: right;
             font-weight: bold;
-            color: #ffcc00; /* 돌 사용량 강조 색상 */
+            color: #ffcc00; /* 옵변 사용량 강조 색상 */
             border-top: 2px solid #7289da; /* 상단 테두리 */
             padding-top: 5px;
         }
@@ -304,7 +307,7 @@
         <img src="img/2.png" alt="Right Emoji" />
     </div>
     <div id="total-stones-box">
-        <h2>총 사용한 돌</h2>
+        <h2>총 사용한 옵변</h2>
         <div id="total-stones-used">0</div>
     </div>
     <div id="simulator">
@@ -575,7 +578,7 @@
                 // 옵션 리스트 업데이트
                 updateOptionsList(allOptions, lockedOptions);
 
-                // 사용한 돌의 개수 업데이트
+                // 사용한 옵변의 개수 업데이트
                 if (lockedOptions.length === 1) {
                     usedStones += 2;
                 } else if (lockedOptions.length === 2) {
@@ -583,7 +586,7 @@
                 } else {
                     usedStones += 1;
                 }
-                document.getElementById('modal-title').textContent = `${accessory.name} 옵션 돌리기 (사용한 돌: ${usedStones})`;
+                document.getElementById('modal-title').textContent = `${accessory.name} 옵션 돌리기 (사용한 옵변: ${usedStones})`;
             };
 
             const modal = document.getElementById('accessoryModal');
@@ -606,7 +609,7 @@
             const appliedOptions = document.getElementById('applied-options');
             const accessoryDiv = document.createElement('div');
             accessoryDiv.className = 'applied-option';
-            accessoryDiv.textContent = `${selectedAccessory.name} (사용한 돌: ${usedStones})`;
+            accessoryDiv.textContent = `${selectedAccessory.name} (사용한 옵변: ${usedStones})`;
             const tooltip = document.createElement('div');
             tooltip.className = 'tooltip';
             
@@ -656,15 +659,15 @@
 
             const usedStonesDiv = document.createElement('div');
             usedStonesDiv.className = 'used-stones';
-            usedStonesDiv.textContent = `사용한 돌: ${usedStones}`;
+            usedStonesDiv.textContent = `사용한 옵변: ${usedStones}`;
             tooltip.appendChild(usedStonesDiv);
             
             accessoryDiv.appendChild(tooltip);
             appliedOptions.appendChild(accessoryDiv);
             
-            // 총 사용한 돌 업데이트
+            // 총 사용한 옵변 업데이트
             totalStonesUsed += usedStones;
-            document.getElementById('total-stones-used').textContent = `총 사용한 돌: ${totalStonesUsed}`;
+            document.getElementById('total-stones-used').textContent = `총 사용한 옵변: ${totalStonesUsed}`;
             
             document.getElementById('accessoryModal').style.display = "none";
 
